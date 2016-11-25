@@ -1,0 +1,3 @@
+name: VanillaMode
+main: net.ddns.templex.vanillamode.VanillaMode
+version: 0.0.1-SNAPSHOT
