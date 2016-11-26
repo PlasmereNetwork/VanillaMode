@@ -37,3 +37,6 @@ Spigot-API
 Spigot-Server
 Bukkit
 CraftBukkit
+
+# GFM Eclipse Support
+.README.md.html
