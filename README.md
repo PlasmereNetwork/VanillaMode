@@ -29,7 +29,7 @@ Probably never.
 
 ### Can I assist?
 
-Sure! Fork, fix, pull request.
+Sure! Fork, fix, and pull request your way to victory!
 
 ### Why would you do this?!!?!
 
