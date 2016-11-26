@@ -9,6 +9,7 @@ import java.util.HashMap;
 import org.bukkit.entity.Player;
 
 // Copied almost verbatim from TestPlayer.java from org.bukkit.plugin.messaging.
+// https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
 public class TestPlayer implements InvocationHandler {
 	
 	public static interface MethodHandler {
