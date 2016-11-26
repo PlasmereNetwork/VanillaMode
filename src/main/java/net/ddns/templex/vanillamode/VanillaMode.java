@@ -3,6 +3,8 @@ package net.ddns.templex.vanillamode;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.ddns.templex.vanillamode.chat.ScoreboardChatIntegration;
+import net.ddns.templex.vanillamode.command.CommandAdjuster;
+import net.ddns.templex.vanillamode.util.Adjuster;
 
 /* VanillaMode plugin for Bukkit: Take a few steps back to Vanilla.
  * Copyright (C) 2016  VTCAKAVSMoACE
@@ -43,11 +45,22 @@ public final class VanillaMode extends JavaPlugin {
 		 *  - Re-vanillify. This will most likely require a restart, but implementation has not been finalized.
 		 */
 		registerListeners();
+		applyAdjustments();
 	}
-	
+
 	private void registerListeners() {
 		getServer().getPluginManager().registerEvents(sci, this);
 		// TODO Register other listeners.
+	}
+	
+	private void applyAdjustments() {
+		Adjuster[] adjusters = new Adjuster[] {
+				new CommandAdjuster(this),
+		};
+		
+		for (Adjuster adjust : adjusters) {
+			adjust.run();
+		}
 	}
 
 	@Override
