@@ -1,4 +1,4 @@
-# Vanilla Mode ![](info-svg/type.svg?raw=true) ![](info-svg/version.svg?raw=true) ![](info-svg/status.svg?raw=true) 
+# Vanilla Mode
 
 A plugin which transforms Bukkit into a no-nonsense Vanilla-like server, with all the optimizations of Bukkit but without those pesky plugins and other additions.
 
