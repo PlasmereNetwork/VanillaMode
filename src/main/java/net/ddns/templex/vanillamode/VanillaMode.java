@@ -1,5 +1,6 @@
 package net.ddns.templex.vanillamode;
 
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.ddns.templex.vanillamode.chat.ScoreboardChatIntegration;
@@ -32,42 +33,41 @@ import net.ddns.templex.vanillamode.util.Adjuster;
  */
 public final class VanillaMode extends JavaPlugin {
 
-	private final ScoreboardChatIntegration sci;
-	
-	public VanillaMode() {
-		this.sci = new ScoreboardChatIntegration();
-	}
-	
+	private Listener[] listeners;
+	private Adjuster[] adjusters;
+
 	@Override
 	public void onEnable() {
-		/* TODO:
-		 *  - Disable all other plugins.
-		 *  - Re-vanillify. This will most likely require a restart, but implementation has not been finalized.
+		/*
+		 * TODO: - Disable all other plugins. - Re-vanillify. This will most
+		 * likely require a restart, but implementation has not been finalized.
 		 */
 		registerListeners();
 		applyAdjustments();
 	}
 
 	private void registerListeners() {
-		getServer().getPluginManager().registerEvents(sci, this);
+		listeners = new Listener[] { new ScoreboardChatIntegration(), };
+
+		for (Listener listener : listeners) {
+			getServer().getPluginManager().registerEvents(listener, this);
+		}
 		// TODO Register other listeners.
 	}
-	
+
 	private void applyAdjustments() {
-		Adjuster[] adjusters = new Adjuster[] {
-				new CommandAdjuster(this),
-		};
-		
-		for (Adjuster adjust : adjusters) {
-			adjust.run();
+		adjusters = new Adjuster[] { new CommandAdjuster(this), };
+
+		for (Adjuster adjuster : adjusters) {
+			adjuster.run();
 		}
 	}
 
 	@Override
 	public void onDisable() {
-		/* TODO:
-		 *  - Unload everything.
+		/*
+		 * TODO: - Unload everything.
 		 */
 	}
-	
+
 }
