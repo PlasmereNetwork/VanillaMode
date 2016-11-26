@@ -1,10 +1,11 @@
 package net.ddns.templex.vanillamode.chat;
 
-import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scoreboard.Team;
 
 /* VanillaMode plugin for Bukkit: Take a few steps back to Vanilla.
  * Copyright (C) 2016  VTCAKAVSMoACE
@@ -31,20 +32,12 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
  * @version initial-development
  */
 public class ScoreboardChatIntegration implements Listener {
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	public boolean onPlayerChat(AsyncPlayerChatEvent event) {
-		event.setFormat(newFormat(event.getFormat(), event.getPlayer()));
-		return true;
-	}
-
-	private String newFormat(String format, Player player) {
-		String formattedPlayer = formatEscape(player.getDisplayName());
-		return format.replaceFirst("%1", formattedPlayer);
-	}
-
-	private String formatEscape(String unescaped) {
-		return unescaped.replaceAll("%", "%%");
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		String playerName = event.getPlayer().getName();
+		Team playerTeam = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(playerName);
+		event.getPlayer().setDisplayName(playerTeam.getPrefix() + playerName + playerTeam.getSuffix());
 	}
 
 }
