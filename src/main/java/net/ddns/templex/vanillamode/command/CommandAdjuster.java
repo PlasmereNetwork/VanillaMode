@@ -1,10 +1,12 @@
 package net.ddns.templex.vanillamode.command;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.SimplePluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.command.Command;
 
 import net.ddns.templex.vanillamode.util.Adjuster;
 
@@ -40,13 +42,38 @@ public class CommandAdjuster extends Adjuster {
 
 			SimpleCommandMap simpleCommandMap = (SimpleCommandMap) commandMapField.get(simplePluginManager);
 
-			simpleCommandMap.clearCommands();
-			simpleCommandMap.register("minecraft", new HelpCommand());
+			Field simpleMapMap = simpleCommandMap.getClass().getDeclaredField("knownCommands");
+			simpleMapMap.setAccessible(true);
+			
+			@SuppressWarnings("unchecked")
+			Map<String, Command> knownCommands = (Map<String, Command>) simpleMapMap.get(simpleCommandMap);
+			
+			removeBukkitAdditions(knownCommands);
+			
+			vanillifyHelp(simpleCommandMap, knownCommands);
 
 			commandMapField.setAccessible(false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void removeBukkitAdditions(Map<String, Command> knownCommands) {
+		knownCommands.remove("bukkit:help");
+		knownCommands.remove("bukkit:version");
+		knownCommands.remove("bukkit:reload");
+		knownCommands.remove("bukkit:plugins");
+		knownCommands.remove("bukkit:timings");
+		knownCommands.remove("version");
+		knownCommands.remove("reload");
+		knownCommands.remove("plugins");
+		knownCommands.remove("timings");
+		knownCommands.remove("icanhasbukkit");
+	}
+	
+	private void vanillifyHelp(SimpleCommandMap simpleCommandMap, Map<String, Command> knownCommands) {
+		knownCommands.remove("help");
+		simpleCommandMap.register("minecraft", new HelpCommand());
 	}
 
 	@Override

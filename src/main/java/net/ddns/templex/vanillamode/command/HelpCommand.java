@@ -1,9 +1,12 @@
 package net.ddns.templex.vanillamode.command;
 
+import java.util.Arrays;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.defaults.VanillaCommand;
 import org.bukkit.help.HelpMap;
 import org.bukkit.help.HelpTopic;
 import org.bukkit.util.ChatPaginator;
@@ -25,7 +28,13 @@ import org.bukkit.util.ChatPaginator;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class HelpCommand extends org.bukkit.command.defaults.HelpCommand {
+@SuppressWarnings("deprecation")
+public class HelpCommand extends VanillaCommand {
+
+	protected HelpCommand() {
+		super("help", "Shows the help menu", "/help <pageNumber>\n/help <topic>", Arrays.asList(new String[]{"?"}));
+		this.setPermission("bukkit.command.help");
+	}
 
 	@Override
 	public boolean execute(CommandSender sender, String currentAlias, String[] args) {
@@ -63,12 +72,13 @@ public class HelpCommand extends org.bukkit.command.defaults.HelpCommand {
 					ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH };
 		}
 
-		HelpTopic[] topics = (HelpTopic[]) helpMap.getHelpTopics().toArray();
+		HelpTopic[] topics = new HelpTopic[helpMap.getHelpTopics().size()];
+		helpMap.getHelpTopics().toArray(topics);
 		int numTopic = (dim[0] - 2);
 
 		sender.sendMessage(ChatColor.DARK_GREEN + "--- Showing help page " + page + " of " + (topics.length / (dim[0] - 2)) + "(/help <page>) ---");
 		for (int i = (page - 1) * numTopic; i < page * numTopic && i < topics.length; i++) {
-			sender.sendMessage(ChatColor.RESET + topics[i % numTopic].getShortText());
+			sender.sendMessage(topics[i % numTopic].getFullText(sender));
 		}
 		sender.sendMessage(ChatColor.GREEN + "Tip: Use the <tab> key while typing a command to auto-complete the command or its arguments");
 
