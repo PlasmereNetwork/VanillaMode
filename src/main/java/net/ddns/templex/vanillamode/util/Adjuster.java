@@ -1,6 +1,6 @@
 package net.ddns.templex.vanillamode.util;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import net.ddns.templex.vanillamode.VanillaMode;
 
 /* VanillaMode plugin for Bukkit: Take a few steps back to Vanilla.
  * Copyright (C) 2016  VTCAKAVSMoACE
@@ -21,15 +21,28 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class Adjuster implements Runnable {
 	
-	private final JavaPlugin plugin;
+	private final VanillaMode plugin;
 	
-	public Adjuster(JavaPlugin plugin) {
+	public Adjuster(VanillaMode plugin) {
 		this.plugin = plugin;
+	}
+	
+	protected abstract void adjust() throws Exception;
+	
+	public final void run() {
+		plugin.getLogger().info(this.getClass().getName() + " adjustments started.");
+		try {
+			adjust();
+			plugin.getLogger().info(this.getClass().getName() + " adjustments succeeded.");
+		} catch (Exception e) {
+			plugin.getLogger().severe(this.getClass().getName() + " adjustments failed. Stacktrace:");
+			e.printStackTrace();
+		}
 	}
 	
 	public abstract String getAdjustments();
 
-	public JavaPlugin getPlugin() {
+	public VanillaMode getPlugin() {
 		return plugin;
 	}
 		

@@ -33,7 +33,7 @@ public class HelpCommand extends VanillaCommand {
 
 	protected HelpCommand() {
 		super("help", "Shows the help menu", "/help <pageNumber>\n/help <topic>", Arrays.asList(new String[]{"?"}));
-		this.setPermission("bukkit.command.help");
+		this.setPermission("vanillamode.command.help");
 	}
 
 	@Override
@@ -41,6 +41,10 @@ public class HelpCommand extends VanillaCommand {
 		if (!testPermission(sender))
 			return true;
 
+		System.out.println(sender.getName());
+		System.out.println(currentAlias);
+		System.out.println(Arrays.toString(args));
+		
 		String command = "";
 		int page = 1;
 		int[] dim;
@@ -84,7 +88,5 @@ public class HelpCommand extends VanillaCommand {
 
 		return true;
 	}
-	
-	
 
 }

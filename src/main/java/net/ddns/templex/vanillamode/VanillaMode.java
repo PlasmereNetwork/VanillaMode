@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import net.ddns.templex.vanillamode.chat.ScoreboardChatIntegration;
 import net.ddns.templex.vanillamode.command.CommandAdjuster;
+import net.ddns.templex.vanillamode.command.CommandInterrupt;
 import net.ddns.templex.vanillamode.util.Adjuster;
 
 /* VanillaMode plugin for Bukkit: Take a few steps back to Vanilla.
@@ -33,8 +34,8 @@ import net.ddns.templex.vanillamode.util.Adjuster;
  */
 public final class VanillaMode extends JavaPlugin {
 
-	private Listener[] listeners;
 	private Adjuster[] adjusters;
+	private Listener[] listeners;
 
 	@Override
 	public void onEnable() {
@@ -42,25 +43,40 @@ public final class VanillaMode extends JavaPlugin {
 		 * TODO: - Disable all other plugins. - Re-vanillify. This will most
 		 * likely require a restart, but implementation has not been finalized.
 		 */
-		registerListeners();
 		applyAdjustments();
+		registerListeners();
+		getLogger().info("VanillaMode enabled successfully.");
 	}
 
 	private void registerListeners() {
-		listeners = new Listener[] { new ScoreboardChatIntegration(), };
+		getLogger().info("Begun registering listeners.");
+		listeners = new Listener[] { new ScoreboardChatIntegration(this), new CommandInterrupt(this) };
 
 		for (Listener listener : listeners) {
 			getServer().getPluginManager().registerEvents(listener, this);
 		}
 		// TODO Register other listeners.
+		getLogger().info("Listeners registered.");
 	}
 
 	private void applyAdjustments() {
+		getLogger().info("Adjustments initiated.");
 		adjusters = new Adjuster[] { new CommandAdjuster(this), };
 
 		for (Adjuster adjuster : adjusters) {
 			adjuster.run();
 		}
+		getLogger().info("Adjustments applied.");
+	}
+	
+	public <T> T getAdjuster(Class<T> clazz) {
+		if (!clazz.getSuperclass().equals(Adjuster.class))
+			return null;
+		for (Adjuster adjuster : adjusters) {
+			if (clazz.isInstance(adjuster))
+				return clazz.cast(adjuster);
+		}
+		return null;
 	}
 
 	@Override
