@@ -35,7 +35,7 @@ public abstract class Adjuster implements Runnable {
 			adjust();
 			plugin.getLogger().info(this.getClass().getName() + " adjustments succeeded.");
 		} catch (Exception e) {
-			plugin.getLogger().severe(this.getClass().getName() + " adjustments failed. Stacktrace:");
+			plugin.getLogger().warning(this.getClass().getName() + " adjustments failed. Stacktrace:");
 			e.printStackTrace();
 		}
 	}

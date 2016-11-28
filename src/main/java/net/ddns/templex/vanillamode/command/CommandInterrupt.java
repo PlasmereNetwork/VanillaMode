@@ -19,6 +19,7 @@ public class CommandInterrupt implements Listener  {
 	}
 	
 	private void fixTab() {
+		
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)

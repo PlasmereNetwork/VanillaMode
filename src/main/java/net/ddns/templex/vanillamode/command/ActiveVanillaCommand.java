@@ -18,7 +18,7 @@ public enum ActiveVanillaCommand {
 	GAMEMODE(new GameModeCommand()),
 	GAMERULE(new GameRuleCommand()),
 	GIVE(new GiveCommand()),
-	HELP(new HelpCommand()),
+	HELP(new net.ddns.templex.vanillamode.command.HelpCommand()),
 	KICK(new KickCommand()),
 	KILL(new KillCommand()),
 	LIST(new ListCommand()),

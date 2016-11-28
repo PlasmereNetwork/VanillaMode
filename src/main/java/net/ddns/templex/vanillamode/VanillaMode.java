@@ -48,17 +48,6 @@ public final class VanillaMode extends JavaPlugin {
 		getLogger().info("VanillaMode enabled successfully.");
 	}
 
-	private void registerListeners() {
-		getLogger().info("Begun registering listeners.");
-		listeners = new Listener[] { new ScoreboardChatIntegration(this), new CommandInterrupt(this) };
-
-		for (Listener listener : listeners) {
-			getServer().getPluginManager().registerEvents(listener, this);
-		}
-		// TODO Register other listeners.
-		getLogger().info("Listeners registered.");
-	}
-
 	private void applyAdjustments() {
 		getLogger().info("Adjustments initiated.");
 		adjusters = new Adjuster[] { new CommandAdjuster(this), };
@@ -67,6 +56,20 @@ public final class VanillaMode extends JavaPlugin {
 			adjuster.run();
 		}
 		getLogger().info("Adjustments applied.");
+	}
+
+	private void registerListeners() {
+		getLogger().info("Begun registering listeners.");
+		listeners = new Listener[] { 
+				new ScoreboardChatIntegration(this), 
+				// new CommandInterrupt(this) 
+		};
+
+		for (Listener listener : listeners) {
+			getServer().getPluginManager().registerEvents(listener, this);
+		}
+		// TODO Register other listeners.
+		getLogger().info("Listeners registered.");
 	}
 	
 	public <T> T getAdjuster(Class<T> clazz) {

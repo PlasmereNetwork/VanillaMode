@@ -22,6 +22,7 @@ build/
 bin/
 dist/
 manifest.mf
+src/lib/
 
 # Mac filesystem dust
 .DS_Store/

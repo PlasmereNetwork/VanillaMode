@@ -23,19 +23,13 @@
 			</plugin>
 		</plugins>
 	</build>
-	<repositories>
-		<repository>
-			<id>bukkit-repo</id>
-			<url>http://repo.bukkit.org/content/groups/public/</url>
-		</repository>
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>org.bukkit</groupId>
-			<artifactId>bukkit</artifactId>
-			<version>1.11-R0.1-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>provided</scope>
+			<artifactId>spigot</artifactId>
+			<scope>system</scope>
+			<version>1.0</version>
+			<systemPath>${basedir}/src/lib/spigot-1.11.jar</systemPath>
 		</dependency>
 	</dependencies>
 </project>
