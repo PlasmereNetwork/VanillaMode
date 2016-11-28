@@ -5,7 +5,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import net.ddns.templex.vanillamode.chat.ScoreboardChatIntegration;
 import net.ddns.templex.vanillamode.command.CommandAdjuster;
-import net.ddns.templex.vanillamode.command.CommandInterrupt;
 import net.ddns.templex.vanillamode.util.Adjuster;
 
 /* VanillaMode plugin for Bukkit: Take a few steps back to Vanilla.
@@ -62,7 +61,6 @@ public final class VanillaMode extends JavaPlugin {
 		getLogger().info("Begun registering listeners.");
 		listeners = new Listener[] { 
 				new ScoreboardChatIntegration(this), 
-				// new CommandInterrupt(this) 
 		};
 
 		for (Listener listener : listeners) {

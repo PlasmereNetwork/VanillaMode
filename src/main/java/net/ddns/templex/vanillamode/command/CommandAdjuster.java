@@ -6,6 +6,9 @@ import java.util.Collection;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.craftbukkit.v1_11_R1.CraftServer;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.PluginManager;
 
 import net.ddns.templex.vanillamode.VanillaMode;
 import net.ddns.templex.vanillamode.util.Adjuster;
@@ -30,7 +33,7 @@ import net.ddns.templex.vanillamode.util.Adjuster;
 public class CommandAdjuster extends Adjuster {
 
 	private final VanillaCommandMap vanillaCommandMap;
-
+	
 	public CommandAdjuster(VanillaMode plugin) {
 		super(plugin);
 		this.vanillaCommandMap = new VanillaCommandMap(plugin);
@@ -38,6 +41,10 @@ public class CommandAdjuster extends Adjuster {
 
 	@Override
 	protected final void adjust() throws Exception {
+		PluginManager pm = Bukkit.getServer().getPluginManager();
+		
+		pm.addPermission(new Permission("vanillamode.command.help", PermissionDefault.TRUE));
+		
 		vanillaCommandMap.clearCommands();
 		
 		for (ActiveVanillaCommand command : ActiveVanillaCommand.values()) {
@@ -56,11 +63,16 @@ public class CommandAdjuster extends Adjuster {
 	public String getAdjustments() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Changed Help command described in org.bukkit.command.SimpleCommandMap to self implemented.\n");
+		sb.append("Replaced SimpleCommandMap instance found in the server with our own.");
 		return sb.toString();
 	}
 
 	public Collection<Command> getCommands() {
 		return vanillaCommandMap.getCommands();
+	}
+
+	public VanillaCommandMap getCommandMap() {
+		return vanillaCommandMap;
 	}
 
 }
