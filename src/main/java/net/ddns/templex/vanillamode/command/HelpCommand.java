@@ -1,15 +1,21 @@
 package net.ddns.templex.vanillamode.command;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-import org.bukkit.Bukkit;
+import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.defaults.VanillaCommand;
-import org.bukkit.help.HelpMap;
-import org.bukkit.help.HelpTopic;
 import org.bukkit.util.ChatPaginator;
+
+import net.ddns.templex.vanillamode.VanillaMode;
 
 /* VanillaMode plugin for Bukkit: Take a few steps back to Vanilla.
  * Copyright (C) 2016  VTCAKAVSMoACE
@@ -28,24 +34,22 @@ import org.bukkit.util.ChatPaginator;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@SuppressWarnings("deprecation")
-public class HelpCommand extends VanillaCommand {
+public class HelpCommand extends Command implements CommandExecutor {
 
 	protected HelpCommand() {
-		super("help", "Shows the help menu", "/help <pageNumber>\n/help <topic>", Arrays.asList(new String[]{"?"}));
-		this.setPermission("vanillamode.command.help");
+		super("help", "Get help for different commands.", "/help [page|command name]",
+				Arrays.asList(new String[] { "?" }));
 	}
+
+	private VanillaCommandMap commandMap;
 
 	@Override
 	public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-		if (!testPermission(sender))
-			return true;
+		if (commandMap == null)
+			this.commandMap = VanillaMode.class.cast(sender.getServer().getPluginManager().getPlugin("VanillaMode"))
+					.getAdjuster(CommandAdjuster.class).getCommandMap();
 
-		System.out.println(sender.getName());
-		System.out.println(currentAlias);
-		System.out.println(Arrays.toString(args));
-		
-		String command = "";
+		String commandName = "";
 		int page = 1;
 		int[] dim;
 
@@ -53,22 +57,34 @@ public class HelpCommand extends VanillaCommand {
 			try {
 				page = Integer.parseInt(args[0]);
 			} catch (NumberFormatException e) {
-				command = args[0];
+				commandName = args[0];
 			}
 		}
 
-		HelpMap helpMap = Bukkit.getServer().getHelpMap();
-
-		if (!command.equals("")) {
-			HelpTopic topic = helpMap.getHelpTopic(command);
-			if (topic == null) {
+		if (!commandName.equals("")) {
+			Command command = commandMap.getCommand(commandName);
+			if (command == null) {
 				sender.sendMessage(ChatColor.RED + "Unknown command. Try /help for a list of commands.");
 				return true;
 			}
-			sender.sendMessage(ChatColor.RED + topic.getShortText());
+			sender.sendMessage(ChatColor.RED + command.getUsage());
+			return true;
+		}
+		
+		if (page < 1) {
+			sender.sendMessage(ChatColor.RED + "The number you have entered (" + page + ") is too small, it must be at least 1");
 			return true;
 		}
 
+		List<Command> commands = commandMap.getCommands();
+		List<String> commandStrings = new ArrayList<String>(commands.size());
+		
+		for (Command command : commands) {
+			if (command.testPermissionSilent(sender)) {
+				commandStrings.add(command.getName());
+			}
+		}
+		
 		if (sender instanceof ConsoleCommandSender) {
 			dim = new int[] { ChatPaginator.UNBOUNDED_PAGE_HEIGHT, ChatPaginator.UNBOUNDED_PAGE_WIDTH };
 		} else {
@@ -76,17 +92,79 @@ public class HelpCommand extends VanillaCommand {
 					ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH };
 		}
 
-		HelpTopic[] topics = new HelpTopic[helpMap.getHelpTopics().size()];
-		helpMap.getHelpTopics().toArray(topics);
 		int numTopic = (dim[0] - 2);
-
-		sender.sendMessage(ChatColor.DARK_GREEN + "--- Showing help page " + page + " of " + (topics.length / (dim[0] - 2)) + "(/help <page>) ---");
-		for (int i = (page - 1) * numTopic; i < page * numTopic && i < topics.length; i++) {
-			sender.sendMessage(topics[i % numTopic].getFullText(sender));
+		int numPages = (int) Math.ceil((commandStrings.size() / (double) numTopic));
+		
+		if (page > numPages) {
+			sender.sendMessage(ChatColor.RED + "The number you have entered (" + page + ") is too big, it must be at most " + numPages);
+			return true;
 		}
-		sender.sendMessage(ChatColor.GREEN + "Tip: Use the <tab> key while typing a command to auto-complete the command or its arguments");
+		
+		Collections.sort(commandStrings, String.CASE_INSENSITIVE_ORDER);
+
+		sender.sendMessage(ChatColor.DARK_GREEN + "--- Showing help page " + page + " of "
+				+ numPages + " (/help <page>) ---");
+		for (int i = (page - 1) * numTopic; i < page * numTopic && i < commandStrings.size(); i++) {
+			sender.sendMessage(commandMap.getCommand(commandStrings.get(i)).getUsage());
+		}
+		sender.sendMessage(ChatColor.GREEN
+				+ "Tip: Use the <tab> key while typing a command to auto-complete the command or its arguments");
 
 		return true;
+	}
+
+	@Override
+	public boolean testPermission(CommandSender sender) {
+		return true;
+	}
+
+	@Override
+	public boolean testPermissionSilent(CommandSender sender) {
+		return true;
+	}
+
+	@Override
+	public boolean register(CommandMap commandMap) {
+		this.commandMap = VanillaCommandMap.class.cast(commandMap);
+		return commandMap.register(this.getName(), this);
+	}
+
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		return true;
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+		return this.tabComplete(sender, alias, args, null);
+	}
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args, Location location)
+			throws IllegalArgumentException {
+		Validate.notNull(sender, "Sender cannot be null");
+		Validate.notNull(args, "Arguments cannot be null");
+		Validate.notNull(alias, "Alias cannot be null");
+
+		if (args.length == 1 && args[0] != null) {
+			List<Command> commands = commandMap.getCommands();
+			List<String> toReturn = new ArrayList<String>(commands.size());
+
+			for (Command command : commands) {
+				if (command.getName().startsWith(args[0])) {
+					toReturn.add(command.getName());
+				}
+				for (String al : command.getAliases()) {
+					if (al.startsWith(args[0])) {
+						toReturn.add(al);
+					}
+				}
+			}
+
+			return toReturn;
+		}
+
+		return new ArrayList<String>(0);
 	}
 
 }

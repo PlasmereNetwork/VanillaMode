@@ -1,5 +1,6 @@
 package net.ddns.templex.vanillamode.command;
 
+import org.bukkit.command.Command;
 import org.bukkit.command.defaults.*;
 
 /* VanillaMode plugin for Bukkit: Take a few steps back to Vanilla.
@@ -35,7 +36,7 @@ public enum ActiveVanillaCommand {
 	GAMEMODE(new GameModeCommand()),
 	GAMERULE(new GameRuleCommand()),
 	GIVE(new GiveCommand()),
-	HELP(new net.ddns.templex.vanillamode.command.HelpCommand()),
+	HELP(new HelpCommand()),
 	KICK(new KickCommand()),
 	KILL(new KillCommand()),
 	LIST(new ListCommand()),
@@ -61,13 +62,13 @@ public enum ActiveVanillaCommand {
 	WEATHER(new WeatherCommand()),
 	WHITELIST(new WhitelistCommand());
 	
-	private final org.bukkit.command.defaults.VanillaCommand command;
+	private final Command command;
 	
-	private ActiveVanillaCommand(org.bukkit.command.defaults.VanillaCommand command) {
+	private ActiveVanillaCommand(Command command) {
 		this.command = command;
 	}
 	
-	public org.bukkit.command.defaults.VanillaCommand getCommand() {
+	public Command getCommand() {
 		return command;
 	}
 	

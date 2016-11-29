@@ -6,8 +6,6 @@ import java.util.Collection;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.craftbukkit.v1_11_R1.CraftServer;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
 
 import net.ddns.templex.vanillamode.VanillaMode;
@@ -43,19 +41,26 @@ public class CommandAdjuster extends Adjuster {
 	protected final void adjust() throws Exception {
 		PluginManager pm = Bukkit.getServer().getPluginManager();
 		
-		pm.addPermission(new Permission("vanillamode.command.help", PermissionDefault.TRUE));
-		
-		vanillaCommandMap.clearCommands();
-		
 		for (ActiveVanillaCommand command : ActiveVanillaCommand.values()) {
-			command.getCommand().register(vanillaCommandMap);
+			if (command.getCommand().register(vanillaCommandMap))
+				getPlugin().getLogger().info(command.getCommand().getName() + " command registered.");
+			else if (vanillaCommandMap.register(command.getCommand().getName(), command.getCommand()))
+				getPlugin().getLogger().info(command.getCommand().getName() + " command registered.");
+			else
+				getPlugin().getLogger().info(command.getCommand().getName() + " command failed to register.");
 		}
 		
-		final Field f = CraftServer.class.getDeclaredField("commandMap");
+		if (vanillaCommandMap.getCommand("help") == null)
+			getPlugin().getLogger().info("help command did not register.");
+		
+		Field f = CraftServer.class.getDeclaredField("commandMap");
 		f.setAccessible(true);
-		
 		f.set(Bukkit.getServer(), vanillaCommandMap);
+		f.setAccessible(false);
 		
+		f = pm.getClass().getDeclaredField("commandMap");
+		f.setAccessible(true);
+		f.set(pm, vanillaCommandMap);
 		f.setAccessible(false);
 	}
 

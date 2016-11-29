@@ -43,7 +43,7 @@ public class VanillaCommandMap extends SimpleCommandMap implements CommandMap {
 		this.plugin = plugin;
 		this.commandMap = new HashMap<String, Command>(ActiveVanillaCommand.values().length);
 	}
-	
+
 	@Override
 	public void setFallbackCommands() {
 		// "What even are fallback commands?" - Vanilla
@@ -60,7 +60,8 @@ public class VanillaCommandMap extends SimpleCommandMap implements CommandMap {
 	public boolean register(String label, String fallbackPrefix, Command command) {
 		if (commandMap == null)
 			return false;
-		return (commandMap.putIfAbsent(label, command) == null);
+		commandMap.remove(label);
+		return commandMap.put(label, command) != null;
 	}
 
 	@Override
@@ -70,6 +71,8 @@ public class VanillaCommandMap extends SimpleCommandMap implements CommandMap {
 
 	@Override
 	public boolean dispatch(CommandSender sender, String cmdLine) throws CommandException {
+		plugin.getLogger().info("Command dispatch called for sender " + sender.getName() + " executing " + cmdLine);
+
 		String label = getLabelFromCmdLine(cmdLine);
 
 		Command command = getCommand(label);
@@ -95,6 +98,12 @@ public class VanillaCommandMap extends SimpleCommandMap implements CommandMap {
 		commandMap.clear();
 	}
 
+	public void removeCommand(Command command) {
+		commandMap.remove(command.getName());
+		for (String alias : command.getAliases())
+			commandMap.remove(alias);
+	}
+
 	@Override
 	public Command getCommand(String name) {
 		Command command = commandMap.get(name);
@@ -108,6 +117,10 @@ public class VanillaCommandMap extends SimpleCommandMap implements CommandMap {
 
 	public List<Command> getCommands() {
 		return new ArrayList<Command>(commandMap.values());
+	}
+	
+	public List<String> getCommandStrings() {
+		return new ArrayList<String>(commandMap.keySet());
 	}
 
 	@Override
@@ -129,18 +142,28 @@ public class VanillaCommandMap extends SimpleCommandMap implements CommandMap {
 
 		if (command != null) {
 			return command.tabComplete(sender, commandName, args);
-		} else if (args.length == 0) {
+		}
+
+		if (args.length == 0) {
 			List<String> posNames = new ArrayList<String>();
 			List<Command> commands = this.getCommands();
 
-			for (Command posCommand : commands)
-				if (posCommand.testPermissionSilent(sender))
-					if (posCommand.getName().startsWith(commandName))
-						posNames.add(posCommand.getName());
-					else
-						for (String alias : posCommand.getAliases())
-							if (alias.startsWith(commandName))
-								posNames.add(alias);
+			boolean isPlayer = sender instanceof Player;
+
+			for (Command posCommand : commands) {
+				if (posCommand.testPermissionSilent(sender)) {
+					String posCommandName = posCommand.getName();
+					if (commandName == null || posCommandName.startsWith(commandName)) {
+						posNames.add((isPlayer ? "/" : "") + posCommand.getName());
+					}
+					for (String alias : posCommand.getAliases()) {
+						if (commandName == null || alias.startsWith(commandName)) {
+							posNames.add((isPlayer ? "/" : "") + alias);
+						}
+					}
+				}
+			}
+			return posNames;
 		}
 
 		// TODO I know there's a better way to do this but cannot currently
@@ -158,7 +181,7 @@ public class VanillaCommandMap extends SimpleCommandMap implements CommandMap {
 		return posNames;
 	}
 
-	private String getLabelFromCmdLine(String cmdLine) {
+	public static String getLabelFromCmdLine(String cmdLine) {
 		if (cmdLine == null)
 			return null;
 		cmdLine = cmdLine.trim();
@@ -173,7 +196,7 @@ public class VanillaCommandMap extends SimpleCommandMap implements CommandMap {
 		return cmdLine.substring(0, cmdLine.indexOf(' '));
 	}
 
-	private String[] getArgsFromCmdLine(String cmdLine) {
+	public static String[] getArgsFromCmdLine(String cmdLine) {
 		if (cmdLine == null)
 			return null;
 
