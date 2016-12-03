@@ -35,14 +35,11 @@ import net.ddns.templex.vanillamode.util.Adjuster;
 public final class VanillaMode extends JavaPlugin {
 
 	private Adjuster[] adjusters;
+
 	private Listener[] listeners;
 
 	@Override
 	public void onEnable() {
-		/*
-		 * TODO: - Disable all other plugins. - Re-vanillify. This will most
-		 * likely require a restart, but implementation has not been finalized.
-		 */
 		applyAdjustments();
 		registerListeners();
 		getLogger().info("VanillaMode enabled successfully.");
@@ -60,10 +57,7 @@ public final class VanillaMode extends JavaPlugin {
 
 	private void registerListeners() {
 		getLogger().info("Begun registering listeners.");
-		listeners = new Listener[] { 
-				new ScoreboardChatIntegration(this), 
-				new HelpInterceptor(),
-		};
+		listeners = new Listener[] { new ScoreboardChatIntegration(this), new HelpInterceptor(), };
 
 		for (Listener listener : listeners) {
 			getServer().getPluginManager().registerEvents(listener, this);
@@ -71,7 +65,7 @@ public final class VanillaMode extends JavaPlugin {
 		// TODO Register other listeners.
 		getLogger().info("Listeners registered.");
 	}
-	
+
 	public <T> T getAdjuster(Class<T> clazz) {
 		if (!clazz.getSuperclass().equals(Adjuster.class))
 			return null;
@@ -84,9 +78,7 @@ public final class VanillaMode extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		/*
-		 * TODO: - Unload everything.
-		 */
+		// Do nothing. We will never be disabled while the server is online.
 	}
 
 }

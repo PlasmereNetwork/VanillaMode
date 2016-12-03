@@ -79,6 +79,8 @@ public class HelpCommand extends Command implements CommandExecutor {
 		List<Command> commands = commandMap.getCommands();
 		List<String> commandStrings = new ArrayList<String>(commands.size());
 		
+		commands.add(this);
+		
 		for (Command command : commands) {
 			if (command.testPermissionSilent(sender)) {
 				commandStrings.add(command.getName());
