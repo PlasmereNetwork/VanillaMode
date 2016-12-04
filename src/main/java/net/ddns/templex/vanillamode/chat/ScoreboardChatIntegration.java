@@ -1,11 +1,14 @@
 package net.ddns.templex.vanillamode.chat;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scoreboard.Team;
+
+import net.ddns.templex.vanillamode.VanillaMode;
 
 /* VanillaMode plugin for Bukkit: Take a few steps back to Vanilla.
  * Copyright (C) 2016  VTCAKAVSMoACE
@@ -33,11 +36,31 @@ import org.bukkit.scoreboard.Team;
  */
 public class ScoreboardChatIntegration implements Listener {
 	
+	private final VanillaMode plugin;
+	
+	public ScoreboardChatIntegration(VanillaMode plugin) {
+		this.plugin = plugin;
+	}
+	
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		String playerName = event.getPlayer().getName();
-		Team playerTeam = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(playerName);
-		event.getPlayer().setDisplayName(playerTeam.getPrefix() + playerName + playerTeam.getSuffix());
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		Bukkit.getScheduler().runTask(plugin, new DisplayNameChanger(event.getPlayer()));
+	}
+	
+	private class DisplayNameChanger implements Runnable {
+		
+		private final Player player;
+		
+		public DisplayNameChanger(Player player) {
+			this.player = player;
+		}
+		
+		public void run() {
+			String playerName = player.getName();
+			Team playerTeam = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(playerName);
+			player.setDisplayName(playerTeam.getPrefix() + playerName + playerTeam.getSuffix());
+		}
+		
 	}
 
 }

@@ -58,7 +58,7 @@ public final class VanillaMode extends JavaPlugin {
 
 	private void registerListeners() {
 		getLogger().info("Begun registering listeners.");
-		listeners = new Listener[] { new ScoreboardChatIntegration(), new HelpInterceptor(), };
+		listeners = new Listener[] { new ScoreboardChatIntegration(this), new HelpInterceptor(), };
 
 		for (Listener listener : listeners) {
 			getServer().getPluginManager().registerEvents(listener, this);
