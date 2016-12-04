@@ -15,8 +15,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.util.ChatPaginator;
 
-import net.ddns.templex.vanillamode.VanillaMode;
-
 /* VanillaMode plugin for Bukkit: Take a few steps back to Vanilla.
  * Copyright (C) 2016  VTCAKAVSMoACE
  * 
@@ -36,18 +34,16 @@ import net.ddns.templex.vanillamode.VanillaMode;
 
 public class HelpCommand extends Command implements CommandExecutor {
 
-	protected HelpCommand() {
+	protected HelpCommand(VanillaCommandMap commandMap) {
 		super("help", "Get help for different commands.", "/help [page|command name]",
 				Arrays.asList(new String[] { "?" }));
+		this.commandMap = commandMap;
 	}
 
-	private VanillaCommandMap commandMap;
+	private final VanillaCommandMap commandMap;
 
 	@Override
 	public boolean execute(CommandSender sender, String currentAlias, String[] args) {
-		if (commandMap == null)
-			this.commandMap = VanillaMode.class.cast(sender.getServer().getPluginManager().getPlugin("VanillaMode"))
-					.getAdjuster(CommandAdjuster.class).getCommandMap();
 
 		String commandName = "";
 		int page = 1;
@@ -127,7 +123,6 @@ public class HelpCommand extends Command implements CommandExecutor {
 
 	@Override
 	public boolean register(CommandMap commandMap) {
-		this.commandMap = VanillaCommandMap.class.cast(commandMap);
 		return commandMap.register(this.getName(), this);
 	}
 

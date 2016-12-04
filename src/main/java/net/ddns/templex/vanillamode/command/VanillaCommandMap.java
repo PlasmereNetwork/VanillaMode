@@ -1,11 +1,9 @@
 package net.ddns.templex.vanillamode.command;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandException;
@@ -41,7 +39,7 @@ public class VanillaCommandMap extends SimpleCommandMap implements CommandMap {
 	public VanillaCommandMap(VanillaMode plugin) {
 		super(plugin.getServer());
 		this.plugin = plugin;
-		this.commandMap = new HashMap<String, Command>(ActiveVanillaCommand.values().length);
+		this.commandMap = new HashMap<String, Command>();
 	}
 
 	@Override
@@ -106,12 +104,16 @@ public class VanillaCommandMap extends SimpleCommandMap implements CommandMap {
 
 	@Override
 	public Command getCommand(String name) {
-		Command command = commandMap.get(name);
-		if (command != null)
-			return command;
-		for (Command posCommand : commandMap.values())
-			if (posCommand.getAliases().contains(name))
-				return posCommand;
+		for (Command command : commandMap.values()) {
+			if (name.equals(command.getLabel())) {
+				return command;
+			}
+			for (String alias : command.getAliases()) {
+				if (name.equals(alias)) {
+					return command;
+				}
+			}
+		}
 		return null;
 	}
 
@@ -131,54 +133,9 @@ public class VanillaCommandMap extends SimpleCommandMap implements CommandMap {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String cmdLine, Location location)
 			throws IllegalArgumentException {
-		Validate.notNull(sender, "sender cannot be null.");
-		Validate.notNull(cmdLine, "cmdLine cannot be null.");
-
-		String commandName = getLabelFromCmdLine(cmdLine);
-
-		String[] args = getArgsFromCmdLine(cmdLine);
-
-		Command command = getCommand(commandName);
-
-		if (command != null) {
-			return command.tabComplete(sender, commandName, args);
-		}
-
-		if (args.length == 0) {
-			List<String> posNames = new ArrayList<String>();
-			List<Command> commands = this.getCommands();
-
-			boolean isPlayer = sender instanceof Player;
-
-			for (Command posCommand : commands) {
-				if (posCommand.testPermissionSilent(sender)) {
-					String posCommandName = posCommand.getName();
-					if (commandName == null || posCommandName.startsWith(commandName)) {
-						posNames.add((isPlayer ? "/" : "") + posCommand.getName());
-					}
-					for (String alias : posCommand.getAliases()) {
-						if (commandName == null || alias.startsWith(commandName)) {
-							posNames.add((isPlayer ? "/" : "") + alias);
-						}
-					}
-				}
-			}
-			return posNames;
-		}
-
-		// TODO I know there's a better way to do this but cannot currently
-		// find. Implementing.
-
-		Collection<? extends Player> players = plugin.getServer().getOnlinePlayers();
-
-		List<String> posNames = new ArrayList<String>(players.size());
-
-		for (Player player : players) {
-			if (player.getName().startsWith(args[args.length - 1]))
-				posNames.add(player.getName());
-		}
-
-		return posNames;
+		if (sender instanceof Player && (cmdLine.startsWith("help") || cmdLine.startsWith("?")))
+			return new ArrayList<String>(0);
+		return super.tabComplete(sender, cmdLine, location);
 	}
 
 	public static String getLabelFromCmdLine(String cmdLine) {

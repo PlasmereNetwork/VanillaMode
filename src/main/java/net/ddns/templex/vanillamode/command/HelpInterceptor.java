@@ -26,18 +26,20 @@ import org.bukkit.event.server.TabCompleteEvent;
 
 public class HelpInterceptor implements Listener {
 
+	static HelpCommand help;
+	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public boolean onTabCompleteEvent(TabCompleteEvent event) {
 		if (!(event.getSender() instanceof Player))
 			return true;
-
+		
 		boolean match = false;
 
 		if (event.getBuffer().startsWith("/help ") || event.getBuffer().startsWith("/? ")) {
 			event.getCompletions().clear();
 			String alias = VanillaCommandMap.getLabelFromCmdLine(event.getBuffer());
 			String[] args = VanillaCommandMap.getArgsFromCmdLine(event.getBuffer());
-			event.getCompletions().addAll(ActiveVanillaCommand.HELP.getCommand().tabComplete(event.getSender(), alias, args));
+			event.getCompletions().addAll(help.tabComplete(event.getSender(), alias, args));
 		} else if (event.getBuffer().equals("/")) {
 			event.getCompletions().add("/help");
 			event.getCompletions().add("/?");
@@ -54,7 +56,7 @@ public class HelpInterceptor implements Listener {
 			event.setCancelled(true);
 			String label = VanillaCommandMap.getLabelFromCmdLine(event.getMessage());
 			String[] args = VanillaCommandMap.getArgsFromCmdLine(event.getMessage());
-			ActiveVanillaCommand.HELP.getCommand().execute(event.getPlayer(), label, args);
+			help.execute(event.getPlayer(), label, args);
 		}
 		return true;
 	}

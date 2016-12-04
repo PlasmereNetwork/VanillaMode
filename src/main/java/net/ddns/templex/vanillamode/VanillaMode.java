@@ -1,5 +1,6 @@
 package net.ddns.templex.vanillamode;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -40,8 +41,8 @@ public final class VanillaMode extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		applyAdjustments();
 		registerListeners();
+		Bukkit.getScheduler().runTask(this, new SynchronousAdjust());
 		getLogger().info("VanillaMode enabled successfully.");
 	}
 
@@ -66,6 +67,16 @@ public final class VanillaMode extends JavaPlugin {
 		getLogger().info("Listeners registered.");
 	}
 
+	public <T> T getListener(Class<T> clazz) {
+		if (!clazz.getSuperclass().equals(Adjuster.class))
+			return null;
+		for (Listener listener : listeners) {
+			if (clazz.isInstance(listener))
+				return clazz.cast(listener);
+		}
+		return null;
+	}
+
 	public <T> T getAdjuster(Class<T> clazz) {
 		if (!clazz.getSuperclass().equals(Adjuster.class))
 			return null;
@@ -79,6 +90,15 @@ public final class VanillaMode extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		// Do nothing. We will never be disabled while the server is online.
+	}
+	
+	private class SynchronousAdjust implements Runnable {
+		
+		@Override
+		public void run() {
+			VanillaMode.this.applyAdjustments();
+		}
+		
 	}
 
 }

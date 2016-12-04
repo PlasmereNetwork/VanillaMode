@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
 import org.bukkit.craftbukkit.v1_11_R1.CraftServer;
 import org.bukkit.plugin.PluginManager;
 
@@ -31,7 +32,7 @@ import net.ddns.templex.vanillamode.util.Adjuster;
 public class CommandAdjuster extends Adjuster {
 
 	private final VanillaCommandMap vanillaCommandMap;
-	
+
 	public CommandAdjuster(VanillaMode plugin) {
 		super(plugin);
 		this.vanillaCommandMap = new VanillaCommandMap(plugin);
@@ -40,24 +41,31 @@ public class CommandAdjuster extends Adjuster {
 	@Override
 	protected final void adjust() throws Exception {
 		PluginManager pm = Bukkit.getServer().getPluginManager();
-		
-		for (ActiveVanillaCommand command : ActiveVanillaCommand.values()) {
-			if (command.getCommand().register(vanillaCommandMap))
-				getPlugin().getLogger().info(command.getCommand().getName() + " command registered.");
-			else if (vanillaCommandMap.register(command.getCommand().getName(), command.getCommand()))
-				getPlugin().getLogger().info(command.getCommand().getName() + " command registered.");
-			else
-				getPlugin().getLogger().info(command.getCommand().getName() + " command failed to register.");
-		}
-		
-		if (vanillaCommandMap.getCommand("help") == null)
-			getPlugin().getLogger().info("help command did not register.");
-		
+
 		Field f = CraftServer.class.getDeclaredField("commandMap");
 		f.setAccessible(true);
+		CommandMap old = CommandMap.class.cast(f.get(Bukkit.getServer()));
+
+		for (String command : old.tabComplete(Bukkit.getConsoleSender(), "")) {
+			if (command.startsWith("minecraft:")) {
+				vanillaCommandMap.register(null, old.getCommand(command.substring(10)));
+				continue;
+			}
+			System.out.println(command + " is not a vanilla command.");
+		}
+		
+		HelpCommand help = new HelpCommand(vanillaCommandMap);
+		
+		HelpInterceptor.help = help;
+		
+		vanillaCommandMap.register(null, help);
+
+		if (vanillaCommandMap.getCommand("help") == null)
+			getPlugin().getLogger().info("help command did not register.");
+
 		f.set(Bukkit.getServer(), vanillaCommandMap);
 		f.setAccessible(false);
-		
+
 		f = pm.getClass().getDeclaredField("commandMap");
 		f.setAccessible(true);
 		f.set(pm, vanillaCommandMap);
