@@ -137,6 +137,8 @@ public class VanillaCommandMap extends SimpleCommandMap implements CommandMap {
 			boolean isPlayer = sender instanceof Player;
 			ArrayList<String> toReturn = new ArrayList<String>();
 			for (Command command : commandMap.values()) {
+				if (!command.testPermissionSilent(sender))
+					continue;
 				if (command.getLabel().startsWith(cmdLine)) {
 					toReturn.add(((isPlayer) ? "/" : "") + command.getLabel());
 				}
