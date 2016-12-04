@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scoreboard.Team;
 
 import net.ddns.templex.vanillamode.VanillaMode;
@@ -44,15 +45,23 @@ public class ScoreboardChatIntegration implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		Bukkit.getScheduler().runTask(plugin, new Runnable() {
-			public void run() {
-				for (Player player : Bukkit.getOnlinePlayers()) {
-					String playerName = player.getName();
-					Team playerTeam = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(playerName);
-					player.setDisplayName(playerTeam.getPrefix() + playerName + playerTeam.getSuffix());
-				}
-			}
-		});
+		Bukkit.getScheduler().runTask(plugin, new DisplayNameChanger(event.getPlayer()));
+	}
+	
+	private class DisplayNameChanger implements Runnable {
+		
+		private final Player player;
+		
+		public DisplayNameChanger(Player player) {
+			this.player = player;
+		}
+		
+		public void run() {
+			String playerName = player.getName();
+			Team playerTeam = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(playerName);
+			player.setDisplayName(playerTeam.getPrefix() + playerName + playerTeam.getSuffix());
+		}
+		
 	}
 
 }
