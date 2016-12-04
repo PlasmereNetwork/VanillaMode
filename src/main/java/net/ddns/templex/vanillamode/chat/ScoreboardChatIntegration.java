@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scoreboard.Team;
 
@@ -44,7 +43,7 @@ public class ScoreboardChatIntegration implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerChat(AsyncPlayerChatEvent event) {
+	public void onPlayerJoin(PlayerJoinEvent event) {
 		Bukkit.getScheduler().runTask(plugin, new DisplayNameChanger(event.getPlayer()));
 	}
 	
@@ -57,9 +56,12 @@ public class ScoreboardChatIntegration implements Listener {
 		}
 		
 		public void run() {
+			if (!player.isOnline())
+				return;
 			String playerName = player.getName();
 			Team playerTeam = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(playerName);
 			player.setDisplayName(playerTeam.getPrefix() + playerName + playerTeam.getSuffix());
+			Bukkit.getScheduler().runTaskLater(plugin, this, 5L);
 		}
 		
 	}
