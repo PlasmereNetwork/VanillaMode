@@ -4,8 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.scoreboard.Team;
 
 /* VanillaMode plugin for Bukkit: Take a few steps back to Vanilla.
@@ -34,18 +33,11 @@ import org.bukkit.scoreboard.Team;
  */
 public class ScoreboardChatIntegration implements Listener {
 	
-	private JavaPlugin plugin;
-
-	public ScoreboardChatIntegration(JavaPlugin plugin) {
-		this.plugin = plugin;
-	}
-	
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onPlayerJoin(PlayerJoinEvent event) {
+	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		String playerName = event.getPlayer().getName();
 		Team playerTeam = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(playerName);
 		event.getPlayer().setDisplayName(playerTeam.getPrefix() + playerName + playerTeam.getSuffix());
-		plugin.getLogger().info(playerName + "'s display name changed to " + event.getPlayer().getDisplayName());
 	}
 
 }

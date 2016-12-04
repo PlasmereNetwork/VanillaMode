@@ -32,19 +32,12 @@ public class HelpInterceptor implements Listener {
 	public boolean onTabCompleteEvent(TabCompleteEvent event) {
 		if (!(event.getSender() instanceof Player))
 			return true;
-		
-		boolean match = false;
 
 		if (event.getBuffer().startsWith("/help ") || event.getBuffer().startsWith("/? ")) {
 			event.getCompletions().clear();
 			String alias = VanillaCommandMap.getLabelFromCmdLine(event.getBuffer());
 			String[] args = VanillaCommandMap.getArgsFromCmdLine(event.getBuffer());
 			event.getCompletions().addAll(help.tabComplete(event.getSender(), alias, args));
-		} else if (event.getBuffer().equals("/")) {
-			event.getCompletions().add("/help");
-			event.getCompletions().add("/?");
-		} else if ((match = "/help".startsWith(event.getBuffer())) | (match = "/?".startsWith(event.getBuffer()))) {
-			event.getCompletions().add(match ? "/?" : "/help");
 		}
 
 		return true;

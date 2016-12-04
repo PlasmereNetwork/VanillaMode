@@ -133,9 +133,26 @@ public class VanillaCommandMap extends SimpleCommandMap implements CommandMap {
 	@Override
 	public List<String> tabComplete(CommandSender sender, String cmdLine, Location location)
 			throws IllegalArgumentException {
-		if (sender instanceof Player && (cmdLine.startsWith("help") || cmdLine.startsWith("?")))
+		if (cmdLine.indexOf(' ') == -1) {
+			boolean isPlayer = sender instanceof Player;
+			ArrayList<String> toReturn = new ArrayList<String>();
+			for (Command command : commandMap.values()) {
+				if (command.getLabel().startsWith(cmdLine)) {
+					toReturn.add(((isPlayer) ? "/" : "") + command.getLabel());
+				}
+				for (String alias : command.getAliases()) {
+					if (alias.startsWith(cmdLine)) {
+						toReturn.add(((isPlayer) ? "/" : "") + alias);
+					}
+				}
+			}
+			return toReturn;
+		}
+		try {
+			return super.tabComplete(sender, cmdLine, location);
+		} catch (Exception e) {
 			return new ArrayList<String>(0);
-		return super.tabComplete(sender, cmdLine, location);
+		}
 	}
 
 	public static String getLabelFromCmdLine(String cmdLine) {
