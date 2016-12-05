@@ -40,6 +40,17 @@ public class ScoreboardChatIntegration implements Listener {
 	
 	public ScoreboardChatIntegration(VanillaMode plugin) {
 		this.plugin = plugin;
+		Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					String playerName = player.getName();
+					Team playerTeam = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(playerName);
+					player.setDisplayName(playerTeam.getPrefix() + playerName + playerTeam.getSuffix());
+				}
+			}
+		}, 0, 200);
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -56,12 +67,9 @@ public class ScoreboardChatIntegration implements Listener {
 		}
 		
 		public void run() {
-			if (!player.isOnline())
-				return;
 			String playerName = player.getName();
 			Team playerTeam = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(playerName);
 			player.setDisplayName(playerTeam.getPrefix() + playerName + playerTeam.getSuffix());
-			Bukkit.getScheduler().runTaskLater(plugin, this, 5L);
 		}
 		
 	}
