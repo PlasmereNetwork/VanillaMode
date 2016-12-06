@@ -55,7 +55,7 @@ public class ScoreboardChatIntegration implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		Bukkit.getScheduler().runTask(plugin, new DisplayNameChanger(event.getPlayer()));
+		Bukkit.getScheduler().runTaskLater(plugin, new DisplayNameChanger(event.getPlayer()), 2);
 	}
 	
 	private class DisplayNameChanger implements Runnable {
