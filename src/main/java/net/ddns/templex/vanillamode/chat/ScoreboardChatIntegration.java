@@ -1,6 +1,7 @@
 package net.ddns.templex.vanillamode.chat;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -69,7 +70,7 @@ public class ScoreboardChatIntegration implements Listener {
 		public void run() {
 			String playerName = player.getName();
 			Team playerTeam = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(playerName);
-			player.setDisplayName(playerTeam.getPrefix() + playerName + playerTeam.getSuffix());
+			player.setDisplayName(playerTeam.getPrefix() + playerName + playerTeam.getSuffix() + ChatColor.RESET);
 		}
 		
 	}
