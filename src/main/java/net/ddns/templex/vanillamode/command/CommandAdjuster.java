@@ -54,6 +54,8 @@ public class CommandAdjuster extends Adjuster {
 			System.out.println(command + " is not a vanilla command.");
 		}
 		
+		vanillaCommandMap.register(null, old.getCommand("reload"));
+		
 		HelpCommand help = new HelpCommand(vanillaCommandMap);
 		
 		HelpInterceptor.help = help;
