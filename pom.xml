@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.ddns.templex</groupId>
 	<artifactId>VanillaMode</artifactId>
-	<version>0.0.2-R6-SNAPSHOT</version>
+	<version>0.0.2-R7-SNAPSHOT</version>
 	<name>VanillaMode</name>
 	<url>https://github.com/TemplexMC/VanillaMode</url>
 	<description>Vanilla mode for Spigot servers. This plugin aims to make the end functionality of a Spigot server no-nonsense Vanilla. A full list of changes may be found in the repository's README.</description>
