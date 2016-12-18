@@ -29,6 +29,8 @@ public abstract class Adjuster implements Runnable {
 	
 	protected abstract void adjust() throws Exception;
 	
+	protected abstract void revert() throws Exception;
+	
 	public final void run() {
 		plugin.getLogger().info(this.getClass().getSimpleName() + " adjustments started.");
 		try {
@@ -36,6 +38,17 @@ public abstract class Adjuster implements Runnable {
 			plugin.getLogger().info(this.getClass().getSimpleName() + " adjustments succeeded.");
 		} catch (Exception e) {
 			plugin.getLogger().warning(this.getClass().getSimpleName() + " adjustments failed. Stacktrace:");
+			e.printStackTrace();
+		}
+	}
+	
+	public final void undo() {
+		plugin.getLogger().info(this.getClass().getSimpleName() + " reversion started.");
+		try {
+			revert();
+			plugin.getLogger().info(this.getClass().getSimpleName() + " reversion succeeded.");
+		} catch (Exception e) {
+			plugin.getLogger().warning(this.getClass().getSimpleName() + " reversion failed. Stacktrace:");
 			e.printStackTrace();
 		}
 	}

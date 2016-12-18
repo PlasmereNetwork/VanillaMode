@@ -1,6 +1,7 @@
 package net.ddns.templex.vanillamode;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -89,7 +90,14 @@ public final class VanillaMode extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		// Do nothing. We will never be disabled while the server is online.
+		getLogger().info("Adjustments reverting...");
+		for (Adjuster adjuster : adjusters) {
+			adjuster.undo();
+		}
+		getLogger().info("Adjustments reverted.");
+		getLogger().info("Unregistering listeners...");
+		HandlerList.unregisterAll(this);
+		getLogger().info("Unregistered listeners.");
 	}
 	
 	private class SynchronousAdjust implements Runnable {

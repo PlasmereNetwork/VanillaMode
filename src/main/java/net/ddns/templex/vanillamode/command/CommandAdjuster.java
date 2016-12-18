@@ -33,6 +33,10 @@ public class CommandAdjuster extends Adjuster {
 
 	private final VanillaCommandMap vanillaCommandMap;
 
+	private CommandMap old;
+	private Field serverMap;
+	private Field pluginMap;
+	
 	public CommandAdjuster(VanillaMode plugin) {
 		super(plugin);
 		this.vanillaCommandMap = new VanillaCommandMap(plugin);
@@ -42,16 +46,16 @@ public class CommandAdjuster extends Adjuster {
 	protected final void adjust() throws Exception {
 		PluginManager pm = Bukkit.getServer().getPluginManager();
 
-		Field f = CraftServer.class.getDeclaredField("commandMap");
-		f.setAccessible(true);
-		CommandMap old = CommandMap.class.cast(f.get(Bukkit.getServer()));
+		serverMap = CraftServer.class.getDeclaredField("commandMap");
+		serverMap.setAccessible(true);
+		old = CommandMap.class.cast(serverMap.get(Bukkit.getServer()));
 
 		for (String command : old.tabComplete(Bukkit.getConsoleSender(), "")) {
 			if (command.startsWith("minecraft:")) {
 				vanillaCommandMap.register(null, old.getCommand(command.substring(10)));
 				continue;
 			}
-			System.out.println(command + " is not a vanilla command.");
+			getPlugin().getLogger().info(command + " is not a vanilla command.");
 		}
 		
 		vanillaCommandMap.register(null, old.getCommand("reload"));
@@ -65,13 +69,24 @@ public class CommandAdjuster extends Adjuster {
 		if (vanillaCommandMap.getCommand("help") == null)
 			getPlugin().getLogger().info("help command did not register.");
 
-		f.set(Bukkit.getServer(), vanillaCommandMap);
-		f.setAccessible(false);
+		serverMap.set(Bukkit.getServer(), vanillaCommandMap);
+		serverMap.setAccessible(false);
 
-		f = pm.getClass().getDeclaredField("commandMap");
-		f.setAccessible(true);
-		f.set(pm, vanillaCommandMap);
-		f.setAccessible(false);
+		pluginMap = pm.getClass().getDeclaredField("commandMap");
+		pluginMap.setAccessible(true);
+		pluginMap.set(pm, vanillaCommandMap);
+		pluginMap.setAccessible(false);
+	}
+	
+	@Override
+	protected void revert() throws Exception {
+		serverMap.setAccessible(true);
+		serverMap.set(Bukkit.getServer(), old);
+		serverMap.setAccessible(false);
+		
+		pluginMap.setAccessible(true);
+		pluginMap.set(Bukkit.getServer().getPluginManager(), old);
+		pluginMap.setAccessible(false);
 	}
 
 	@Override
