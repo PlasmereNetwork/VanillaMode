@@ -31,7 +31,6 @@ import net.ddns.templex.vanillamode.VanillaMode;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@SuppressWarnings("unused")
 public class VanillaCommandMap extends SimpleCommandMap implements CommandMap {
 
 	private final VanillaMode plugin;
@@ -70,6 +69,8 @@ public class VanillaCommandMap extends SimpleCommandMap implements CommandMap {
 
 	@Override
 	public boolean dispatch(CommandSender sender, String cmdLine) throws CommandException {
+		plugin.getLogger().info("Command dispatch called for sender " + sender.getName() + " executing " + cmdLine);
+
 		String label = getLabelFromCmdLine(cmdLine);
 
 		Command command = getCommand(label);
