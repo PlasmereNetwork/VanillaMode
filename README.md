@@ -1,4 +1,4 @@
-# Vanilla Mode ![](https://img.shields.io/badge/type-bukkit--plugin-brightgreen.svg) ![](https://img.shields.io/badge/version-0.0.2--R4-brightgreen.svg) ![](https://img.shields.io/badge/status-in--use-brightgreen.svg)
+# Vanilla Mode ![](https://img.shields.io/badge/type-bukkit--plugin-brightgreen.svg) ![](https://img.shields.io/badge/version-0.0.2--R6-brightgreen.svg) ![](https://img.shields.io/badge/status-in--use-brightgreen.svg)
 
 A plugin which transforms Bukkit into a no-nonsense Vanilla-like server, with all the optimizations of Bukkit but without those pesky plugins and other additions.
 
