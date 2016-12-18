@@ -48,7 +48,10 @@ public class ScoreboardChatIntegration implements Listener {
 				for (Player player : Bukkit.getOnlinePlayers()) {
 					String playerName = player.getName();
 					Team playerTeam = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(playerName);
-					player.setDisplayName(playerTeam.getPrefix() + playerName + playerTeam.getSuffix());
+					if (playerTeam != null)
+						player.setDisplayName(playerTeam.getPrefix() + playerName + playerTeam.getSuffix());
+					else
+						player.setDisplayName(playerName);
 				}
 			}
 		}, 0, 200);
@@ -70,7 +73,10 @@ public class ScoreboardChatIntegration implements Listener {
 		public void run() {
 			String playerName = player.getName();
 			Team playerTeam = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(playerName);
-			player.setDisplayName(playerTeam.getPrefix() + playerName + playerTeam.getSuffix() + ChatColor.RESET);
+			if (playerTeam != null)
+				player.setDisplayName(playerTeam.getPrefix() + playerName + playerTeam.getSuffix() + ChatColor.RESET);
+			else
+				player.setDisplayName(playerName);
 		}
 		
 	}
