@@ -41,4 +41,4 @@ We are licensed under GPL 3.0+, as seen in the LICENSE file. Upon making forks o
 
 ### How do I get more information about Templex?
 
-Well, look around this organization, for one. If you're too lazy (or just looking to join the server), go [to our website](http://templex.ddns.net/).
+Well, look around this organization, for one. If you're too lazy (or just looking to join the server), go [to our website](http://templex.co/).
